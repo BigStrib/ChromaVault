@@ -1,5 +1,5 @@
 /* ============================================
-   Design Tokens!
+   Design Tokens
    ============================================ */
 :root {
     --primary: #dc2626;
@@ -25,6 +25,7 @@
     --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-mono: 'Roboto Mono', monospace;
     
+    --safe-top: env(safe-area-inset-top, 0px);    /* ADD THIS */
     --safe-bottom: env(safe-area-inset-bottom, 0px);
     --nav-height: 64px;
 }
@@ -976,8 +977,8 @@ input[type="number"] { -moz-appearance: textfield; }
 
 .modal-close {
     position: absolute;
-    top: 15px;
-    right: 3px;
+    top: 16px;
+    right: 16px;
     padding: 8px;
     background: var(--bg-elevated);
     border: none;
@@ -986,6 +987,7 @@ input[type="number"] { -moz-appearance: textfield; }
     cursor: pointer;
     display: flex;
     transition: all 0.15s;
+    z-index: 10;
 }
 
 .modal-close:hover {
@@ -996,6 +998,17 @@ input[type="number"] { -moz-appearance: textfield; }
 .modal-close svg {
     width: 20px;
     height: 20px;
+}
+
+/* Mobile: account for safe area (notch/status bar) */
+@media (max-width: 639px) {
+    .modal-close {
+        top: calc(16px + var(--safe-top));
+    }
+    
+    .modal-sheet {
+        padding-top: var(--safe-top);
+    }
 }
 
 /* ============================================
@@ -1049,5 +1062,4 @@ input[type="number"] { -moz-appearance: textfield; }
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--border-light);
-
 }
