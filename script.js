@@ -1,5 +1,5 @@
 /**
- * ChromaVault - Professional Color Picker
+ * ChromaVault - Professional Color Picker!
  * No local storage - Export required to save
  */
 
@@ -669,4 +669,5 @@ document.addEventListener('keydown', e => {
         e.preventDefault();
         library.save();
     }
+
 });
