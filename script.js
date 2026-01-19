@@ -600,7 +600,7 @@ class Library {
         // Preview - solid color
         document.getElementById('modalPreview').style.backgroundColor = `rgb(${color.r}, ${color.g}, ${color.b})`;
         document.getElementById('modalColorName').textContent = color.name;
-        document.getElementById('modalColorHex').textContent = color.hex;
+        
 
         // Formats
         const formats = Color.formats(color.r, color.g, color.b, color.a);
