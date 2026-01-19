@@ -1,5 +1,5 @@
 /**
- * ChromaVault - Professional Color Picker!
+ * ChromaVault - Professional Color Picker
  * No local storage - Export required to save
  */
 
@@ -159,7 +159,8 @@ const Color = {
         const lch = this.labToLch(lab.l, lab.a, lab.b);
 
         return {
-            name: this.getName(hex), hex,
+            name: this.getName(hex), 
+            hex,
             rgb: `rgb(${r}, ${g}, ${b})`,
             hsl: `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`,
             lab: `lab(${lab.l}% ${lab.a} ${lab.b})`,
@@ -437,7 +438,7 @@ class Picker {
 
     getCurrent() {
         const rgb = this.getRgb();
-        return { ...rgb, hex: Color.rgbToHex(rgb.r, rgb.g, rgb.b) };
+        return { ...rgb, a: 1, hex: Color.rgbToHex(rgb.r, rgb.g, rgb.b) };
     }
 
     setFromRgb(rgb) {
@@ -521,7 +522,7 @@ class Library {
 
         this.colors.unshift({
             id: Date.now().toString(36) + Math.random().toString(36).substr(2),
-            hex: color.hex, r: color.r, g: color.g, b: color.b,
+            hex: color.hex, r: color.r, g: color.g, b: color.b, a: color.a,
             name, createdAt: Date.now()
         });
 
@@ -575,7 +576,6 @@ class Library {
         // Preview - solid color
         document.getElementById('modalPreview').style.backgroundColor = `rgb(${color.r}, ${color.g}, ${color.b})`;
         document.getElementById('modalColorName').textContent = color.name;
-        
 
         // Formats
         const formats = Color.formats(color.r, color.g, color.b);
@@ -669,5 +669,4 @@ document.addEventListener('keydown', e => {
         e.preventDefault();
         library.save();
     }
-
 });
