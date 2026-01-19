@@ -976,7 +976,7 @@ input[type="number"] { -moz-appearance: textfield; }
 
 .modal-close {
     position: absolute;
-    top: 1px;
+    top: 15px;
     right: 3px;
     padding: 8px;
     background: var(--bg-elevated);
@@ -1049,4 +1049,5 @@ input[type="number"] { -moz-appearance: textfield; }
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--border-light);
+
 }
