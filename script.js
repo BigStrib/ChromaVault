@@ -152,7 +152,7 @@ const Color = {
         return this.isValidHex(hex) ? hex : null;
     },
 
-    formats(r, g, b, a = 1) {
+    formats(r, g, b) {
         const hex = this.rgbToHex(r, g, b);
         const hsl = this.rgbToHsl(r, g, b);
         const lab = this.rgbToLab(r, g, b);
@@ -161,9 +161,7 @@ const Color = {
         return {
             name: this.getName(hex), hex,
             rgb: `rgb(${r}, ${g}, ${b})`,
-            rgba: `rgba(${r}, ${g}, ${b}, ${a})`,
             hsl: `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`,
-            hsla: `hsla(${hsl.h}, ${hsl.s}%, ${hsl.l}%, ${a})`,
             lab: `lab(${lab.l}% ${lab.a} ${lab.b})`,
             lch: `lch(${lch.l}% ${lch.c} ${lch.h})`
         };
@@ -228,7 +226,6 @@ class Picker {
         this.h = 0;
         this.s = 1;
         this.v = 1;
-        this.a = 1;
         this.format = 'hex';
         this.dragging = null;
 
@@ -240,10 +237,6 @@ class Picker {
         
         this.hueArea = document.getElementById('hueArea');
         this.hueCursor = document.getElementById('hueCursor');
-        
-        this.alphaArea = document.getElementById('alphaArea');
-        this.alphaStrip = document.getElementById('alphaStrip');
-        this.alphaCursor = document.getElementById('alphaCursor');
         
         this.preview = document.getElementById('previewColor');
         this.formatSelect = document.getElementById('formatSelect');
@@ -322,25 +315,12 @@ class Picker {
         this.hueArea.addEventListener('mousedown', e => { this.dragging = 'hue'; handleHue(e); });
         this.hueArea.addEventListener('touchstart', e => { e.preventDefault(); this.dragging = 'hue'; handleHue(e); }, { passive: false });
 
-        // Alpha area
-        const handleAlpha = e => {
-            const rect = this.alphaArea.getBoundingClientRect();
-            const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-            this.a = Math.max(0, Math.min(1, x / rect.width));
-            this.render();
-            this.updateInputs();
-        };
-
-        this.alphaArea.addEventListener('mousedown', e => { this.dragging = 'alpha'; handleAlpha(e); });
-        this.alphaArea.addEventListener('touchstart', e => { e.preventDefault(); this.dragging = 'alpha'; handleAlpha(e); }, { passive: false });
-
         // Global move/end
         const onMove = e => {
             if (!this.dragging) return;
             e.preventDefault();
             if (this.dragging === 'sat') handleSat(e);
             else if (this.dragging === 'hue') handleHue(e);
-            else if (this.dragging === 'alpha') handleAlpha(e);
         };
 
         document.addEventListener('mousemove', onMove);
@@ -368,18 +348,13 @@ class Picker {
         this.drawSaturation();
         
         const rgb = this.getRgb();
-        const hex = Color.rgbToHex(rgb.r, rgb.g, rgb.b);
         
         // Preview
-        this.preview.style.backgroundColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${this.a})`;
+        this.preview.style.backgroundColor = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
         
         // Hue cursor
         this.hueCursor.style.left = `${(this.h / 360) * 100}%`;
         this.hueCursor.style.backgroundColor = `hsl(${this.h}, 100%, 50%)`;
-        
-        // Alpha strip
-        this.alphaStrip.style.background = `linear-gradient(to right, transparent, ${hex})`;
-        this.alphaCursor.style.left = `${this.a * 100}%`;
         
         // Sat cursor color
         const lum = (0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b) / 255;
@@ -455,14 +430,14 @@ class Picker {
         
         switch (this.format) {
             case 'hex': return Color.rgbToHex(rgb.r, rgb.g, rgb.b);
-            case 'rgb': return this.a < 1 ? `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${this.a})` : `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
-            case 'hsl': return this.a < 1 ? `hsla(${hsl.h}, ${hsl.s}%, ${hsl.l}%, ${this.a})` : `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
+            case 'rgb': return `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+            case 'hsl': return `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
         }
     }
 
     getCurrent() {
         const rgb = this.getRgb();
-        return { ...rgb, a: this.a, hex: Color.rgbToHex(rgb.r, rgb.g, rgb.b) };
+        return { ...rgb, hex: Color.rgbToHex(rgb.r, rgb.g, rgb.b) };
     }
 
     setFromRgb(rgb) {
@@ -546,7 +521,7 @@ class Library {
 
         this.colors.unshift({
             id: Date.now().toString(36) + Math.random().toString(36).substr(2),
-            hex: color.hex, r: color.r, g: color.g, b: color.b, a: color.a,
+            hex: color.hex, r: color.r, g: color.g, b: color.b,
             name, createdAt: Date.now()
         });
 
@@ -603,8 +578,8 @@ class Library {
         
 
         // Formats
-        const formats = Color.formats(color.r, color.g, color.b, color.a);
-        const order = ['hex', 'rgb', 'rgba', 'hsl', 'hsla'];
+        const formats = Color.formats(color.r, color.g, color.b);
+        const order = ['hex', 'rgb', 'hsl'];
         if (this.settings.showAdvanced) order.push('lab', 'lch');
 
         document.getElementById('modalFormats').innerHTML = order.map(key => `
